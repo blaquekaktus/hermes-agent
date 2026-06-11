@@ -220,6 +220,46 @@
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .crow{cursor:pointer}.crow:active{transform:scale(.99)}
 
+  /* ===== SWIPE DECK ===== */
+  .deck{position:absolute;inset:0;display:none;flex-direction:column;padding:8px 16px 14px}.deck.on{display:flex}
+  .deck-stack{position:relative;flex:1;min-height:0}
+  .swcard{position:absolute;inset:0;border-radius:24px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;
+    box-shadow:0 24px 60px -28px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,245,225,.18);will-change:transform;touch-action:none;cursor:grab;user-select:none}
+  .swcard:active{cursor:grabbing}
+  .swcard::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 38%,rgba(6,4,14,.86));pointer-events:none}
+  .swcard .vbadge{position:absolute;top:14px;right:14px;z-index:2;display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#0b2018;
+    background:var(--green);padding:5px 10px;border-radius:999px;box-shadow:0 6px 16px -6px rgba(101,224,174,.7)}
+  .swcard .vbadge svg{width:11px;height:11px}
+  .swinfo{position:relative;z-index:2;padding:18px}
+  .swnm{font-size:24px;font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:8px}.swnm small{font-weight:500;font-size:18px;color:var(--ink);opacity:.85}.swnm .v{width:18px;height:18px}
+  .swprompt{color:var(--ink);opacity:.92;font-size:14px;margin-top:7px;line-height:1.4}
+  .swchips{display:flex;gap:7px;margin-top:11px}
+  .swcard .cchip{font-size:11px;padding:5px 11px;border-radius:9px}
+  .swstamp{position:absolute;top:24px;z-index:3;font-size:26px;font-weight:800;letter-spacing:.06em;padding:5px 14px;border-radius:12px;opacity:0;transition:opacity .1s;text-transform:uppercase}
+  .swstamp.like{left:20px;color:var(--green);border:3px solid var(--green);transform:rotate(-14deg)}
+  .swstamp.nope{right:20px;color:var(--coral);border:3px solid var(--coral);transform:rotate(14deg)}
+  .deck-actions{display:flex;justify-content:center;gap:26px;padding:16px 0 4px;flex:none}
+  .da{width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s;
+    background:var(--glass);border:1px solid var(--bd);backdrop-filter:blur(20px)}
+  .da svg{width:26px;height:26px}.da:active{transform:scale(.9)}
+  .da.pass{color:var(--coral)}.da.like{color:#2a1405;background:var(--warm);border-color:transparent;box-shadow:0 14px 32px -12px rgba(255,150,90,.7)}
+  .deck-empty{display:none;flex-direction:column;gap:4px;text-align:center;color:var(--ink);font-size:16px;font-weight:700;
+    align-items:center;justify-content:center;position:absolute;inset:8px 16px 80px}.deck-empty span{color:var(--muted);font-size:13px;font-weight:400}
+  .deck.empty .deck-stack,.deck.empty .deck-actions{display:none}
+  .deck.empty .deck-empty{display:flex}
+
+  /* ===== MATCH OVERLAY ===== */
+  .matchwrap{position:absolute;inset:0;z-index:40;display:none;align-items:center;justify-content:center;padding:30px;
+    background:radial-gradient(120% 80% at 50% 110%, rgba(255,150,80,.4), transparent 56%),rgba(5,4,14,.86);backdrop-filter:blur(8px)}
+  .matchwrap.on{display:flex;animation:rise .35s ease}
+  .matchinner{text-align:center;width:100%}
+  .matchtitle{font-size:34px;font-weight:800;letter-spacing:-.02em;background:var(--warm);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .matchsub{color:var(--muted);font-size:14px;margin:10px auto 0;max-width:260px}
+  .matchavs{display:flex;justify-content:center;margin:26px 0 30px}
+  .matchavs .ma{width:92px;height:92px;border-radius:50%;border:3px solid #0b0920;box-shadow:0 14px 40px -14px rgba(0,0,0,.8)}
+  .matchavs .ma.me{background:var(--warm);margin-right:-22px;z-index:2}
+  .matchavs .ma:not(.me){margin-left:-22px}
+
   /* Ghost Mode toggle */
   .switch{width:42px;height:24px;border-radius:999px;flex:none;background:rgba(255,255,255,.12);position:relative;transition:.2s;border:1px solid var(--bd)}
   .switch i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--ink);transition:.2s}
@@ -362,7 +402,7 @@
         <!-- DISCOVER -->
         <div class="hv on" id="hv-disc">
           <div class="htitle"><h2>Who's <span class="free">free</span> near you</h2></div>
-          <div class="toggle glass"><button class="on" id="tg-map" onclick="setDisc('map')">Map</button><button id="tg-feed" onclick="setDisc('feed')">Feed</button></div>
+          <div class="toggle glass"><button class="on" id="tg-map" onclick="setDisc('map')">Map</button><button id="tg-feed" onclick="setDisc('feed')">Feed</button><button id="tg-deck" onclick="setDisc('deck')">Deck</button></div>
           <div class="disc-body">
             <div class="map on" id="map">
               <div class="rings"><i></i><i></i><i></i></div>
@@ -383,6 +423,14 @@
               <div class="fcard glass"><div class="av p3"><span class="vb"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4L19 7" stroke="#0b0920" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><div style="flex:1"><div class="nm">Sofia <small>· 24</small></div><div class="st">Drinks in the Altstadt tonight 🍸 who's in?</div><div class="meta"><span class="cchip go">Going out</span><span class="cchip dist">800 m</span><span class="cchip dist">8:30pm</span></div></div></div>
               <div class="fcard glass"><div class="av p4"><span class="vb"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4L19 7" stroke="#0b0920" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><div style="flex:1"><div class="nm">Elias <small>· 31</small></div><div class="st">Anyone for bouldering at 6? 🧗 all levels welcome</div><div class="meta"><span class="cchip hob">Hobby</span><span class="cchip dist">1.2 km</span><span class="cchip dist">6:00pm</span></div></div></div>
               <div class="fcard glass"><div class="av p2"><span class="vb"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4L19 7" stroke="#0b0920" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><div style="flex:1"><div class="nm">Jonas <small>· 29</small></div><div class="st">Running buddy? 🏃 easy 5k along the Inn</div><div class="meta"><span class="cchip hob">Hobby</span><span class="cchip dist">600 m</span><span class="cchip dist">free now</span></div></div></div>
+            </div>
+            <div class="deck" id="deck">
+              <div class="deck-stack" id="deck-stack"></div>
+              <div class="deck-empty" id="deck-empty">That's everyone nearby for now ✦<span>Widen your distance, or check back soon.</span></div>
+              <div class="deck-actions" id="deck-actions">
+                <button class="da pass" onclick="swipeDeck('pass')" aria-label="Pass"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+                <button class="da like" onclick="swipeDeck('like')" aria-label="Like"><svg viewBox="0 0 24 24" fill="none"><path d="M12 20s-6.5-4.2-6.5-9A3.5 3.5 0 0 1 12 8a3.5 3.5 0 0 1 6.5 2c0 4.8-6.5 10-6.5 10z" fill="currentColor"/></svg></button>
+              </div>
             </div>
           </div>
         </div>
@@ -470,6 +518,17 @@
       <div style="padding:0 24px 22px"><button class="btn" onclick="goLive()"><span>Go live ⚡</span></button></div>
     </div>
 
+    <!-- MATCH OVERLAY -->
+    <div class="matchwrap" id="matchwrap">
+      <div class="matchinner">
+        <div class="matchtitle">It's a match<span class="dot" style="background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent">.</span></div>
+        <p class="matchsub" id="match-sub">You and Mara both said yes. Chat's unlocked.</p>
+        <div class="matchavs"><div class="ma me"></div><div class="ma" id="match-av"></div></div>
+        <button class="btn" onclick="matchSayHi()"><span>Say hi 👋</span></button>
+        <button class="btn ghost" onclick="closeMatch()">Keep swiping</button>
+      </div>
+    </div>
+
     <div class="toast" id="toast">Done</div>
   </div></div>
 </div>
@@ -488,9 +547,11 @@ function homeTab(name){
   });
 }
 function setDisc(v){
-  var map=document.getElementById('map'),feed=document.getElementById('feed'),tm=document.getElementById('tg-map'),tf=document.getElementById('tg-feed');
-  if(v==='map'){map.classList.add('on');feed.classList.remove('on');tm.classList.add('on');tf.classList.remove('on');}
-  else{feed.classList.add('on');map.classList.remove('on');tf.classList.add('on');tm.classList.remove('on');}
+  ['map','feed','deck'].forEach(function(k){
+    var pane=document.getElementById(k); if(pane) pane.classList.toggle('on', k===v);
+    var btn=document.getElementById('tg-'+k); if(btn) btn.classList.toggle('on', k===v);
+  });
+  if(v==='deck') renderDeck();
 }
 var avMap={Mara:'p1',Jonas:'p2',Sofia:'p3',Elias:'p4',Nora:'p5'};
 function pick(nm,age,st,chip,label,dist){
@@ -551,6 +612,82 @@ function toggleGhost(){
   document.getElementById('ghost-row').classList.toggle('ghost-on', ghost);
   var me=document.querySelector('.center-me'); if(me) me.style.opacity = ghost ? '.25' : '1';
   toast(ghost ? "Ghost Mode on — you're hidden from the map 👻" : 'Ghost Mode off — visible to nearby people again');
+}
+
+/* ---------- swipe deck + mutual match ---------- */
+var deckProfiles=[
+  {nm:'Mara', age:27, av:'p1', line:'Always up for a spontaneous coffee ☕', chip:'fr',  label:'Friends',   dist:'400 m', back:true},
+  {nm:'Jonas',age:29, av:'p2', line:'Running the Inn most mornings — join?',  chip:'hob', label:'Hobby',     dist:'600 m', back:false},
+  {nm:'Sofia',age:24, av:'p3', line:'Show me the best Altstadt bars 🍸',      chip:'go',  label:'Going out', dist:'800 m', back:true},
+  {nm:'Elias',age:31, av:'p4', line:'Boulderer — all levels welcome 🧗',      chip:'hob', label:'Hobby',     dist:'1.2 km',back:false},
+  {nm:'Nora', age:26, av:'p5', line:'New in town, show me around?',           chip:'fr',  label:'Friends',   dist:'1.5 km',back:true}
+];
+var deckIdx=0, currentMatch=null;
+function renderDeck(){
+  var stack=document.getElementById('deck-stack'), deck=document.getElementById('deck');
+  stack.innerHTML='';
+  if(deckIdx>=deckProfiles.length){ deck.classList.add('empty'); return; }
+  deck.classList.remove('empty');
+  for(var k=Math.min(deckIdx+2,deckProfiles.length-1);k>=deckIdx;k--){
+    var p=deckProfiles[k], depth=k-deckIdx, c=document.createElement('div');
+    c.className='swcard '+p.av;
+    c.style.transform='scale('+(1-depth*0.05)+') translateY('+(depth*10)+'px)';
+    c.style.zIndex=String(20-depth);
+    c.innerHTML='<span class="vbadge"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4 4L19 7" stroke="#0b2018" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>Verified</span>'
+      +'<div class="swstamp like">Like</div><div class="swstamp nope">Nope</div>'
+      +'<div class="swinfo"><div class="swnm">'+p.nm+' <small>'+p.age+'</small><svg class="v" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" fill="#65E0AE" opacity=".2"/><path d="M8 12l2.5 2.5L16 9" stroke="#65E0AE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
+      +'<div class="swprompt">“'+p.line+'”</div>'
+      +'<div class="swchips"><span class="cchip '+p.chip+'">'+p.label+'</span><span class="cchip dist">'+p.dist+'</span></div></div>';
+    stack.appendChild(c);
+  }
+  attachDrag(stack.lastChild);
+}
+function flyOut(card,right){
+  if(!card) return;
+  card.style.transition='transform .3s ease, opacity .3s ease';
+  card.style.transform='translateX('+(right?520:-520)+'px) rotate('+(right?28:-28)+'deg)';
+  card.style.opacity='0';
+}
+function attachDrag(card){
+  if(!card) return;
+  var sx=0,dx=0,drag=false;
+  var like=card.querySelector('.swstamp.like'), nope=card.querySelector('.swstamp.nope');
+  card.addEventListener('pointerdown',function(e){ drag=true; sx=e.clientX; card.style.transition='none'; try{card.setPointerCapture(e.pointerId);}catch(_){} });
+  card.addEventListener('pointermove',function(e){
+    if(!drag) return; dx=e.clientX-sx;
+    card.style.transform='translateX('+dx+'px) rotate('+(dx*0.05)+'deg)';
+    like.style.opacity = dx>20 ? Math.min(1,dx/100) : 0;
+    nope.style.opacity = dx<-20 ? Math.min(1,-dx/100) : 0;
+  });
+  function end(){
+    if(!drag) return; drag=false;
+    if(Math.abs(dx)>90){ flyOut(card, dx>0); swipeDeck(dx>0?'like':'pass', true); }
+    else { card.style.transition='transform .25s ease'; card.style.transform=''; like.style.opacity=0; nope.style.opacity=0; }
+    dx=0;
+  }
+  card.addEventListener('pointerup',end);
+  card.addEventListener('pointercancel',end);
+}
+function swipeDeck(action,fromDrag){
+  if(deckIdx>=deckProfiles.length) return;
+  var p=deckProfiles[deckIdx];
+  if(!fromDrag) flyOut(document.getElementById('deck-stack').lastChild, action==='like');
+  deckIdx++;
+  var liked=action==='like';
+  setTimeout(function(){ renderDeck(); if(liked && p.back) showMatch(p); }, fromDrag?180:300);
+}
+function showMatch(p){
+  currentMatch={nm:p.nm, av:p.av};
+  document.getElementById('match-av').className='ma '+p.av;
+  document.getElementById('match-sub').textContent='You and '+p.nm+' both said yes. Chat’s unlocked.';
+  document.getElementById('matchwrap').classList.add('on');
+}
+function closeMatch(){ document.getElementById('matchwrap').classList.remove('on'); }
+function matchSayHi(){
+  closeMatch();
+  if(!currentMatch) return;
+  if(!threads[currentMatch.nm]) threads[currentMatch.nm]=[['day','Today'],['out','Hey '+currentMatch.nm+'! 👋 great to match']];
+  openChat(currentMatch.nm, currentMatch.av);
 }
 </script>
 </body>
