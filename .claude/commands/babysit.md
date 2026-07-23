@@ -45,3 +45,6 @@ guide), deps via `uv`, then run the relevant `pytest`.
 Stay silent on no-op passes. Stop when the PR is merged or closed.
 
 Canonical spec: `ai-brain/patterns/babysit.md`.
+
+In a web/remote session, subscribing to the PR's activity is the event-driven
+equivalent — CI and review events wake the session instead of polling.
