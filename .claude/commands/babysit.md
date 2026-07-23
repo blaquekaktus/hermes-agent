@@ -43,3 +43,5 @@ guide), deps via `uv`, then run the relevant `pytest`.
 `PR #<n> · <state>  (CI: <pass/fail> · conflicts: <y/n> · open comments: <n>)`
 `Action this pass: <what changed, or "none — waiting on CI / human review">`
 Stay silent on no-op passes. Stop when the PR is merged or closed.
+
+Canonical spec: `ai-brain/patterns/babysit.md`.
